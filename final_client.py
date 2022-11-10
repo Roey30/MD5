@@ -63,11 +63,13 @@ def main():
     global found, different, LIST_THREADS, first_range_of_numbers, final_range_of_numbers
     try:
         CLIENT.connect((SERVER, PORT))
-        while True:
+        while not found:
             number_of_cores = CORES
             number_thread = 1
             print(f'The number of Cores you have is: {number_of_cores}')
             msg_range = CLIENT.recv(MAX_PACKET).decode()  # msg_range[0] = msg, msg_range[1] = range
+            if msg_range is None:
+                exit(f'The other client found it')
             print(f'The server send {msg_range}')
             msg_range = msg_range.split(',')
             print(f'The word that the server sent is: {msg_range[0]}')
