@@ -10,7 +10,7 @@ server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 LIST_THREADS = []
 
 EXAMPLE = 'EC9C0F7EDCC18A98B1F31853B1813301'
-EXAMPLE2 = 'b7a782741f667201b54880c925faec4b'  # 10000
+EXAMPLE2 = '6074c6aa3488f3c2dddff2a7ca821aab'  # 5555
 MAX_NUMBER = 1000
 MAX_CLIENTS = 50
 CLIENT_NUMBER = 0
@@ -32,12 +32,14 @@ def main():
                 LIST_THREADS.append(thread)
                 CLIENT_NUMBER += 1
                 print(f'List of threads: {LIST_THREADS}')
-                print(f'THe number of clients is - {CLIENT_NUMBER}')
+                print(f'The number of clients is - {CLIENT_NUMBER}')
                 thread.start()
+                for t in LIST_THREADS:
+                    t.join()
                 if did_found != 'False':
-                    exit()
+                    exit(f'The client found it ')
             if did_found != 'False':
-                exit()
+                exit(f'The client found it ')
     except socket.error as err:
         print('received socket exception - ' + str(err))
     finally:
