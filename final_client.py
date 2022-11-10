@@ -20,7 +20,7 @@ final_range_of_numbers = 0
 different = 0
 final_number = 0
 thread_found = 0
-
+discovered = False
 
 MAX_PACKET = 2048
 SERVER = "127.0.0.1"
@@ -40,7 +40,7 @@ def range_calculater(number_threads):
 
 
 def solve_function(msg, first_range, final_range, number_thread):
-    global final_msg, found, final_hash
+    global final_msg, found, final_hash, discovered
     print('Begging the solving part')
     print(f'Number of thread is: {number_thread}')
     while first_range < final_range and not found:
@@ -51,15 +51,16 @@ def solve_function(msg, first_range, final_range, number_thread):
             print('discovered')
             found = True
         first_range += 1
-    if found:
-        print(f'thread number: {thread_found} fount it. it was number - {final_number} for the string - {msg}')
-    else:
-        print(f'thread number {number_thread} did not found it')
+    if found and not discovered:
+        print(f'Found it. it was number - {first_range - 1} for the string - {msg}')
+        discovered = True
+    elif not discovered:
+        print(f'thread number {number_thread - 1} did not found it')
     return found
 
 
 def main():
-    global found, different
+    global found, different, LIST_THREADS, first_range_of_numbers, final_range_of_numbers
     try:
         CLIENT.connect((SERVER, PORT))
         while True:
@@ -71,32 +72,32 @@ def main():
             msg_range = msg_range.split(',')
             print(f'The word that the server sent is: {msg_range[0]}')
             range_number = msg_range[1].split('-')
-            first_range = int(range_number[0])
-            final_range = int(range_number[1])
-            different = (first_range - final_range) * -1
-            print(f'The first range is: {first_range} and The final range is: {final_range}'
+            first_range_of_numbers = int(range_number[0])
+            final_range_of_numbers = int(range_number[1])
+            different = (first_range_of_numbers - final_range_of_numbers) * -1
+            print(f'The first range is: {first_range_of_numbers} and The final range is: {final_range_of_numbers}'
                   f' and the different is: {different}')
             while number_of_cores != 0:
                 range_number = range_calculater(number_thread)
-                thread = Thread(target=solve_function, args=(msg_range[0], range_number[0], range_number[1], number_thread))
+                thread = Thread(target=solve_function, args=(msg_range[0], range_number[0], range_number[1],
+                                                             number_thread))
+                thread.start()
                 number_thread += 1
                 LIST_THREADS.append(thread)
                 print(f'List of threads: {LIST_THREADS}')
                 print(f'The number of Cores is: {number_of_cores}')
-                print(f'The number of threads is: {number_thread}')
+                print(f'The number of threads is: {number_thread - 1}')
                 number_of_cores = number_of_cores - 1
-            for i in LIST_THREADS:
-                i.start()
-            if number_of_cores == 0:
-                for t in LIST_THREADS:
-                    t.join()
-                    if found:
-                        print('sending True')
-                        CLIENT.send('True'.encode())
-                        break
-                    else:
-                        print('sending False')
-                        CLIENT.send('False'.encode())
+            for t in LIST_THREADS:
+                t.join()
+            LIST_THREADS = []
+            if found:
+                print('sending True')
+                CLIENT.send('True'.encode())
+                break
+            else:
+                print('sending False')
+                CLIENT.send('False'.encode())
     except socket.error and KeyboardInterrupt and ConnectionRefusedError and ConnectionResetError as err:
         print('Received socket exception - ' + str(err))
     finally:
