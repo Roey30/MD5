@@ -23,6 +23,7 @@ WORD_TO_FIND = 'EC9C0F7EDCC18A98B1F31853B1813301'
 MAX_NUMBER = 1000
 MAX_CLIENTS = 50
 CLIENT_NUMBER = 0
+RANGE_NUMBER = 0
 
 MSG = ''
 DID_FOUND = 'False'
@@ -37,29 +38,33 @@ def range_giver():
     calculates the range
     :return: first range and last range
     """
-    first_range_of_number = math.trunc((MAX_NUMBER / MAX_CLIENTS) * (CLIENT_NUMBER - 1))
-    final_range_of_number = math.trunc((MAX_NUMBER / MAX_CLIENTS) * CLIENT_NUMBER)
+    first_range_of_number = math.trunc((MAX_NUMBER / MAX_CLIENTS) * (RANGE_NUMBER - 1))
+    final_range_of_number = math.trunc((MAX_NUMBER / MAX_CLIENTS) * RANGE_NUMBER)
     return first_range_of_number, final_range_of_number
 
 
 def handle_clients(client_socket, client_address):
-    global DID_FOUND, CLIENT_NUMBER, DISCOVERED, MSG
-    while not DISCOVERED:
-        first_range_of_number = range_giver()[0]
-        final_range_of_number = range_giver()[1]
-        range_number = str(first_range_of_number) + '-' + str(final_range_of_number)
-        message = WORD_TO_FIND, str(range_number)
-        client_socket.send(message[0].encode() + ','.encode() + message[1].encode())
-        if not DISCOVERED:
-            MSG = client_socket.recv(MAX_PACKETS).decode()
-            MSG = MSG.split(',')
-            DID_FOUND = MSG[0]
-        if DID_FOUND == 'False':
-            pass
-        elif DID_FOUND == 'True':
-            print(f'The client {client_address} found it, it was the hash of number {MSG[1]} ')
-            DISCOVERED = True
-            return
+    global DID_FOUND, DISCOVERED, MSG, RANGE_NUMBER
+    try:
+        while not DISCOVERED:
+            first_range_of_number = range_giver()[0]
+            final_range_of_number = range_giver()[1]
+            range_number = str(first_range_of_number) + '-' + str(final_range_of_number)
+            RANGE_NUMBER += 1
+            message = WORD_TO_FIND, str(range_number)
+            client_socket.send(message[0].encode() + ','.encode() + message[1].encode())
+            if not DISCOVERED:
+                MSG = client_socket.recv(MAX_PACKETS).decode()
+                MSG = MSG.split(',')
+                DID_FOUND = MSG[0]
+            if DID_FOUND == 'False':
+                pass
+            elif DID_FOUND == 'True':
+                print(f'The client {client_address} found it, it was the hash of number {MSG[1]} ')
+                DISCOVERED = True
+                return
+    except Exception as err:
+        print('Some problem came up - ' + str(err))
 
 
 def main():
@@ -68,7 +73,7 @@ def main():
     connect to the client and open the threads for each client
     for each client sends the range and prints the answer
     """
-    global CLIENT_NUMBER, DID_FOUND
+    global CLIENT_NUMBER, DID_FOUND, RANGE_NUMBER
     try:
         SERVER_SOCKET.bind((IP, PORT))
         SERVER_SOCKET.listen(QUEUE_SIZE)
@@ -79,6 +84,7 @@ def main():
             thread = Thread(target=handle_clients, args=(client_socket, client_address))
             LIST_THREADS.append(thread)
             CLIENT_NUMBER += 1
+            RANGE_NUMBER = CLIENT_NUMBER
             thread.start()
         for t in LIST_THREADS:
             t.join()
