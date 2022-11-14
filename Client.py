@@ -19,11 +19,12 @@ FIRST_RANGE_OF_NUMBERS = 0
 FINAL_RANGE_OF_NUMBERS = 0
 DIFFERENT = 0
 DISCOVERED = False
+FINAL_ANSWER_NUMBER = 0
 
 MAX_PACKET = 2048
 SERVER = "127.0.0.1"
 CLIENT_SOCKET = socket.socket()
-PORT = 3256
+PORT = 32564
 CLIENT = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # FUNCTIONS:
@@ -51,7 +52,7 @@ def solve_function(msg, first_range, final_range):
     :param final_range:
     :return:
     """
-    global FINAL_MSG, FOUND, FINAL_HASH, DISCOVERED
+    global FINAL_MSG, FOUND, FINAL_HASH, DISCOVERED, FINAL_ANSWER_NUMBER
     if not FOUND:
         while first_range < final_range and not FOUND:
             FINAL_MSG = hashlib.md5(str(first_range).encode())
@@ -59,6 +60,7 @@ def solve_function(msg, first_range, final_range):
             if FINAL_HASH == msg:
                 print('DISCOVERED')
                 FOUND = True
+                FINAL_ANSWER_NUMBER = first_range
             first_range += 1
         if FOUND and not DISCOVERED:
             print(f'FOUND it. it was number - {first_range - 1} for the string - {msg}')
@@ -71,7 +73,7 @@ def main():
 
     :return:
     """
-    global FOUND, DIFFERENT, LIST_THREADS, FIRST_RANGE_OF_NUMBERS, FINAL_RANGE_OF_NUMBERS
+    global FOUND, DIFFERENT, LIST_THREADS, FIRST_RANGE_OF_NUMBERS, FINAL_RANGE_OF_NUMBERS, FINAL_ANSWER_NUMBER
     number_of_cores = CORES
     try:
         print(f'The number of Cores you have is: {number_of_cores}')
@@ -98,7 +100,7 @@ def main():
                 t.join()
             LIST_THREADS = []
             if FOUND:
-                CLIENT.send('True'.encode())
+                CLIENT.send('True'.encode() + ','.encode() + str(FINAL_ANSWER_NUMBER).encode())
                 break
             else:
                 CLIENT.send('False'.encode())
