@@ -1,5 +1,10 @@
 """
-
+Name : Roey Firan
+Program name : Project MD5
+Date : 14/11/2022
+Description: Uses to find a reverse hash function,
+gets a sting and returns the number that if you do the hash function on you
+get the string
 """
 # IMPORTS:
 import multiprocessing
@@ -32,9 +37,7 @@ CLIENT = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 def range_calculater(number_threads):
     """
-
-    :param number_threads:
-    :return:
+    calculates the range for each thread(core)
     """
     global FIRST_RANGE_OF_NUMBERS, FINAL_RANGE_OF_NUMBERS, DIFFERENT
     first_range = math.trunc(FIRST_RANGE_OF_NUMBERS + ((DIFFERENT / CORES) * (number_threads - 1)))
@@ -46,11 +49,8 @@ def range_calculater(number_threads):
 
 def solve_function(msg, first_range, final_range):
     """
-
-    :param msg:
-    :param first_range:
-    :param final_range:
-    :return:
+    gets the range from the main and finds the
+    hash number
     """
     global FINAL_MSG, FOUND, FINAL_HASH, DISCOVERED, FINAL_ANSWER_NUMBER
     if not FOUND:
@@ -70,8 +70,9 @@ def solve_function(msg, first_range, final_range):
 
 def main():
     """
-
-    :return:
+    The main function:
+    gets the range from the client
+    and sends back the hash number to the server
     """
     global FOUND, DIFFERENT, LIST_THREADS, FIRST_RANGE_OF_NUMBERS, FINAL_RANGE_OF_NUMBERS, FINAL_ANSWER_NUMBER
     number_of_cores = CORES
@@ -106,7 +107,7 @@ def main():
                 CLIENT.send('False'.encode())
         if FOUND:
             CLIENT.send('True'.encode())
-    except socket.error and IndexError and ConnectionResetError and KeyboardInterrupt as err:
+    except Exception as err:
         print('There has been a problem try running again - ' + str(err))
     finally:
         if DISCOVERED:
