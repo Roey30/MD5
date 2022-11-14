@@ -53,19 +53,22 @@ def solve_function(msg, first_range, final_range):
     hash number
     """
     global FINAL_MSG, FOUND, FINAL_HASH, DISCOVERED, FINAL_ANSWER_NUMBER
-    if not FOUND:
-        while first_range < final_range and not FOUND:
-            FINAL_MSG = hashlib.md5(str(first_range).encode())
-            FINAL_HASH = FINAL_MSG.hexdigest()
-            if FINAL_HASH == msg:
-                print('DISCOVERED')
-                FOUND = True
-                FINAL_ANSWER_NUMBER = first_range
-            first_range += 1
-        if FOUND and not DISCOVERED:
-            print(f'FOUND it. it was number - {first_range - 1} for the string - {msg}')
-            DISCOVERED = True
-    return FOUND
+    try:
+        if not FOUND:
+            while first_range < final_range and not FOUND:
+                FINAL_MSG = hashlib.md5(str(first_range).encode())
+                FINAL_HASH = FINAL_MSG.hexdigest()
+                if FINAL_HASH == msg:
+                    print('DISCOVERED')
+                    FOUND = True
+                    FINAL_ANSWER_NUMBER = first_range
+                first_range += 1
+            if FOUND and not DISCOVERED:
+                print(f'FOUND it. it was number - {first_range - 1} for the string - {msg}')
+                DISCOVERED = True
+        return FOUND
+    except Exception as err:
+        print('Some problem came up - ' + str(err))
 
 
 def main():
