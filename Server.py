@@ -47,7 +47,6 @@ def handle_clients(client_socket, client_address):
     while not DISCOVERED:
         first_range_of_number = range_giver()[0]
         final_range_of_number = range_giver()[1]
-        CLIENT_NUMBER += 1
         range_number = str(first_range_of_number) + '-' + str(final_range_of_number)
         message = WORD_TO_FIND, str(range_number)
         client_socket.send(message[0].encode() + ','.encode() + message[1].encode())
@@ -87,7 +86,7 @@ def main():
             exit()
         else:
             print('The client did not found it')
-    except socket.error and ConnectionAbortedError as err:
+    except Exception as err:
         print('Some problem came up - ' + str(err))
     finally:
         SERVER_SOCKET.close()
