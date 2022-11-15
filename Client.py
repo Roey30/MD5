@@ -44,7 +44,6 @@ def range_calculater(number_threads):
     first_range = math.trunc(FIRST_RANGE_OF_NUMBERS + ((DIFFERENT / CORES) * (number_threads - 1)))
     final_range = math.trunc(FIRST_RANGE_OF_NUMBERS + (DIFFERENT / CORES) * number_threads)
     if first_range % 1000 == 0:
-        print(f'The first range is: {first_range}, The last range is: {final_range}')
         logging.info(f'The first range is: {first_range}, The last range is: {final_range}')
     return first_range, final_range
 
@@ -61,18 +60,15 @@ def solve_function(msg, first_range, final_range):
                 FINAL_MSG = hashlib.md5(str(first_range).encode())
                 FINAL_HASH = FINAL_MSG.hexdigest()
                 if FINAL_HASH == msg:
-                    print('DISCOVERED')
                     logging.info('DISCOVERED')
                     FOUND = True
                     FINAL_ANSWER_NUMBER = first_range
                 first_range += 1
             if FOUND and not DISCOVERED:
-                print(f'FOUND it. it was number - {first_range - 1} for the string - {msg}')
                 logging.info(f'FOUND it. it was number - {first_range - 1} for the string - {msg}')
                 DISCOVERED = True
         return FOUND
     except Exception as err:
-        print('Some problem came up - ' + str(err))
         logging.error('Some problem came up - ' + str(err))
 
 
@@ -85,7 +81,6 @@ def main():
     global FOUND, DIFFERENT, LIST_THREADS, FIRST_RANGE_OF_NUMBERS, FINAL_RANGE_OF_NUMBERS, FINAL_ANSWER_NUMBER
     number_of_cores = CORES
     try:
-        print(f'The number of Cores you have is: {number_of_cores}')
         logging.info(f'The number of Cores you have is: {number_of_cores}')
         CLIENT.connect((SERVER, PORT))
         while not FOUND:
@@ -118,11 +113,9 @@ def main():
         if FOUND:
             CLIENT.send('True'.encode())
     except Exception as err:
-        print('There has been a problem try running again - ' + str(err))
         logging.error('There has been a problem try running again - ' + str(err))
     finally:
         if DISCOVERED:
-            print('Someone found it - the client is closing now ')
             logging.info('Someone found it - the client is closing now ')
 
 
