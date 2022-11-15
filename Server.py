@@ -9,6 +9,7 @@ get the string
 # IMPORTS
 import socket
 import math
+import logging
 from threading import *
 
 # CONSTANTS
@@ -61,10 +62,12 @@ def handle_clients(client_socket, client_address):
                 pass
             elif DID_FOUND == 'True':
                 print(f'The client {client_address} found it, it was the hash of number {MSG[1]} ')
+                logging.debug(f'The client {client_address} found it, it was the hash of number {MSG[1]} ')
                 DISCOVERED = True
                 return
     except Exception as err:
         print('Some problem came up - ' + str(err))
+        logging.warning('Some problem came up - ' + str(err))
 
 
 def main():
@@ -78,9 +81,11 @@ def main():
         SERVER_SOCKET.bind((IP, PORT))
         SERVER_SOCKET.listen(QUEUE_SIZE)
         print('Starting process')
+        logging.info('Starting process')
         while CLIENT_NUMBER < MAX_CLIENTS and not DISCOVERED:
             client_socket, client_address = SERVER_SOCKET.accept()
             print(f'Hello client {client_address}')
+            logging.info(f'Hello client {client_address}')
             thread = Thread(target=handle_clients, args=(client_socket, client_address))
             LIST_THREADS.append(thread)
             CLIENT_NUMBER += 1
@@ -92,13 +97,17 @@ def main():
             exit()
         else:
             print('The client did not found it')
+            logging.info('The client did not found it')
     except Exception as err:
         print('Some problem came up - ' + str(err))
+        logging.warning('Some problem came up - ' + str(err))
     finally:
         SERVER_SOCKET.close()
         if DISCOVERED:
             print('Done')
+            logging.info('Done')
 
 
 if __name__ == '__main__':
+    logging.basicConfig(filename='Client_MD5.log', encoding='utf-8', level=logging.DEBUG)
     main()
