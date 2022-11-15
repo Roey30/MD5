@@ -109,5 +109,5 @@ def main():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='Client_MD5.log', encoding='utf-8', level=logging.DEBUG)
+    logging.basicConfig(filename='Server_MD5.log', encoding='utf-8', level=logging.DEBUG)
     main()
