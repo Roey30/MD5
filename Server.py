@@ -67,7 +67,7 @@ def handle_clients(client_socket, client_address):
                 return
     except Exception as err:
         print('Some problem came up - ' + str(err))
-        logging.warning('Some problem came up - ' + str(err))
+        logging.error('Some problem came up - ' + str(err))
 
 
 def main():
@@ -100,7 +100,7 @@ def main():
             logging.info('The client did not found it')
     except Exception as err:
         print('Some problem came up - ' + str(err))
-        logging.warning('Some problem came up - ' + str(err))
+        logging.error('Some problem came up - ' + str(err))
     finally:
         SERVER_SOCKET.close()
         if DISCOVERED:
