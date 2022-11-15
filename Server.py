@@ -66,7 +66,6 @@ def handle_clients(client_socket, client_address):
                 DISCOVERED = True
                 return
     except Exception as err:
-        print('Some problem came up - ' + str(err))
         logging.error('Some problem came up - ' + str(err))
 
 
@@ -80,11 +79,9 @@ def main():
     try:
         SERVER_SOCKET.bind((IP, PORT))
         SERVER_SOCKET.listen(QUEUE_SIZE)
-        print('Starting process')
         logging.info('Starting process')
         while CLIENT_NUMBER < MAX_CLIENTS and not DISCOVERED:
             client_socket, client_address = SERVER_SOCKET.accept()
-            print(f'Hello client {client_address}')
             logging.info(f'Hello client {client_address}')
             thread = Thread(target=handle_clients, args=(client_socket, client_address))
             LIST_THREADS.append(thread)
@@ -96,15 +93,12 @@ def main():
         if DISCOVERED:
             exit()
         else:
-            print('The client did not found it')
             logging.info('The client did not found it')
     except Exception as err:
-        print('Some problem came up - ' + str(err))
         logging.error('Some problem came up - ' + str(err))
     finally:
         SERVER_SOCKET.close()
         if DISCOVERED:
-            print('Done')
             logging.info('Done')
 
 
